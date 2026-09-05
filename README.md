@@ -4,8 +4,9 @@ Project 1 - Flocking**
 * Grace Tan
 * Tested on: Windows 11 Home 25H2 (Build 26200), AMD Ryzen 9 8945HX @ 2.50GHz, 16GB RAM, NVIDIA GeForce RTX 5060 Laptop GPU 8GB
 
-# Project 1: CUDA Boids Simulation 
 ---
+
+# Project 1: CUDA Boids Simulation 
 
 <p align="center">
   <img src="images/naive_boids.gif" width="800"><br>
@@ -33,5 +34,15 @@ To explore how different data structures and memory access patterns affect GPU p
 3. **Coherent Grid** - An optimal approach that builds on the uniform grid by additionally sorting boid data to match grid's cell ordering. 
 
 # Performance Analysis
----
 
+Performance was measured using GLFW's elapsed-time tracking, computing the average FPS over a 10 second period. Since CUDA-GL interop calls forces synchronization between the CUDA kernel and OpenGL rendering, the CPU-side frame loop aligns with actual GPU computation. Disabling visualization removes rendering overhead so that the measured FPS more accurately reflects GPU performance. 
+
+## For each implementation, how does changing the number of boids affect performance? Why do you think this is?
+
+## For each implementation, how does changing the block count and block size affect performance? Why do you think this is?
+
+## For the coherent uniform grid: did you experience any performance improvements with the more coherent uniform grid? Was this the outcome you expected? Why or why not?
+
+## Did changing cell width and checking 27 vs 8 neighboring cells affect performance? Why or why not? Be careful: it is insufficient (and possibly incorrect) to say that 27-cell is slower simply because there are more cells to check!
+
+# Blooper
