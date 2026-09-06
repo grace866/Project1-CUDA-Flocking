@@ -38,30 +38,33 @@ To explore how different data structures and memory access patterns affect GPU p
 Performance was measured using GLFW's elapsed-time tracking, computing the average FPS over a 10 second period. Since CUDA-GL interop calls forces synchronization between the CUDA kernel and OpenGL rendering, the CPU-side frame loop aligns with actual GPU computation. Disabling visualization removes rendering overhead so that the measured FPS more accurately reflects GPU performance. 
 
 ## For each implementation, how does changing the number of boids affect performance? Why do you think this is?
-<table>
-  <tr>
-    <td><img src="images/Average FPS over 10s vs. Boid Count (128 Block Size, Visualization On).png" width="500"/></td>
-    <td><img src="images/Average FPS over 10s vs. Boid Count (128 Block Size, Visualization Off).png" width="500"/></td>
-  </tr>
-  <tr>
-    <td align="center">Naive</td>
-    <td align="center">Coherent</td>
-  </tr>
-</table>
+<p align="center">
+  <img src="images/Average FPS over 10s vs. Boid Count (128 Block Size, Visualization On).png" width="800"><br>
+</p>
+<p align="center">
+  <img src="images/Average FPS over 10s vs. Boid Count (128 Block Size, Visualization Off).png" width="800"><br>
+</p>
+
+Generally, increasing the number of boids decreased performance across all three implementations. 
+
+The most significant contributing factor is likely the increased neighbor count for each boid. This means that each thread must do more work processing the information of its neighbors to determine how to move in the next timestep. From the graphs, we can observe that this effect is particularly damaging for the naive approach, which completes a brute-force search through all other boids to find its neighbors. Additionally, a higher boid count increases sorting overhead, affecting the performance of the uniform grid approaches. 
 
 ## For each implementation, how does changing the block count and block size affect performance? Why do you think this is?
-<table>
-  <tr>
-    <td><img src="images/Average FPS over 10s vs. Block Size (Boid Count 100k, Visualization On).png" width="500"/></td>
-    <td><img src="images/Average FPS over 10s vs. Block Size (Boid Count 100k, Visualization Off).png" width="500"/></td>
-  </tr>
-  <tr>
-    <td align="center">Naive</td>
-    <td align="center">Coherent</td>
-  </tr>
-</table>
+<p align="center">
+  <img src="images/Average FPS over 10s vs. Block Size (Boid Count 100k, Visualization On).png" width="800"><br>
+</p>
+<p align="center">
+  <img src="images/Average FPS over 10s vs. Block Size (Boid Count 100k, Visualization Off).png" width="800"><br>
+</p>
+
+Generally, increasing the block size increased performance across all three implementations, although the uniform grid approaches showed more significant improvement over the naive method.
+
+Notably, there are substantial improvements from increasing the block size from 16 to 32. This is likely due to threads being executed in warps of 32; any block size smaller than that would lead to wasted compute throughput since warp lanes are being underutilized. There are also significant improvements from increasing block size from 32 to 64, which could be due to removing the bottleneck potentially caused by the limit of blocks on a given streaming multiprocessor. Other improvements in performance could be attributed reduced block count, which decreases the overhead associated with launching and scheduling multiple blocks. 
 
 ## For the coherent uniform grid: did you experience any performance improvements with the more coherent uniform grid? Was this the outcome you expected? Why or why not?
+For all three implementations, there is a notable performance improvement using coherent grid over uniform grid.
+
+I was initially unsure of why the coherent grid approach performed so much better than the uniform grid approach; although coherent grid removes the additional step of referencing the array of boid pointers (a global memory read), it also requires device memory allocation for two additional buffers. Then, I realized that storing the positions and velocities of boids within the same cell results in memory coalescing, allowing warps to make bigger memory requests since requested values are stored close together in memory. 
 
 ## Did changing cell width and checking 27 vs 8 neighboring cells affect performance? Why or why not? Be careful: it is insufficient (and possibly incorrect) to say that 27-cell is slower simply because there are more cells to check!
 
