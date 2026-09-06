@@ -67,5 +67,49 @@ For all three implementations, there is a notable performance improvement using 
 I was initially unsure of why the coherent grid approach performed so much better than the uniform grid approach; although coherent grid removes the additional step of referencing the array of boid pointers (a global memory read), it also requires device memory allocation for two additional buffers. Then, I realized that storing the positions and velocities of boids within the same cell results in memory coalescing, allowing warps to make bigger memory requests since requested values are stored close together in memory. 
 
 ## Did changing cell width and checking 27 vs 8 neighboring cells affect performance? Why or why not? Be careful: it is insufficient (and possibly incorrect) to say that 27-cell is slower simply because there are more cells to check!
+I kept block size at 128 and boid count at 100k: 
 
+<div align="center">
+  <table>
+    <tr>
+      <th colspan="3">Visualization On</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>Uniform</th>
+      <th>Coherent</th>
+    </tr>
+    <tr>
+      <td>8 Cells, 2x Max Rule Distance</td>
+      <td>438.437321</td>
+      <td>561.076609</td>
+    </tr>
+    <tr>
+      <td>27 Cells, 1x Max Rule Distance</td>
+      <td>589.765764</td>
+      <td>641.464905</td>
+    </tr>
+    <tr>
+      <th colspan="3">Visualization Off</th>
+    </tr>
+    <tr>
+      <th></th>
+      <th>Uniform</th>
+      <th>Coherent</th>
+    </tr>
+    <tr>
+      <td>8 Cells, 2x Max Rule Distance</td>
+      <td>680.343491</td>
+      <td>994.047743</td>
+    </tr>
+    <tr>
+      <td>27 Cells, 1x Max Rule Distance</td>
+      <td>905.059607</td>
+      <td>1312.235267</td>
+    </tr>
+  </table>
+</div>
+
+Yes, there is an improvement across both methods and with visualization both on and off. This could be due to the simpler 27 neighboring cells check, which does not require additional calculations to determine which cells might contain neighbors. The bigger cell size in the 8 cell check could also result in boids that are substantially further than the largest rule distance being checked in the loop. The reduced cell size could also mean there are more empty cells that the loop can simply skip over. 
+  
 # Blooper
