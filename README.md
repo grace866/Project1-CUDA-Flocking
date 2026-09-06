@@ -113,3 +113,9 @@ I kept block size at 128 and boid count at 100k:
 Yes, there is an improvement across both methods and with visualization both on and off. This could be due to the simpler 27 neighboring cells check, which does not require additional calculations to determine which cells might contain neighbors. The bigger cell size in the 8 cell check could also result in boids that are substantially further than the largest rule distance being checked in the loop. The reduced cell size could also mean there are more empty cells that the loop can simply skip over. 
   
 # Blooper
+
+Interesting result from accidentally updating the position with the velocity update twice (slowed down to see effect better):
+
+<p align="center">
+  <img src="images/blooper.gif" width="800"><br>
+</p>
