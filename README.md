@@ -38,8 +38,28 @@ To explore how different data structures and memory access patterns affect GPU p
 Performance was measured using GLFW's elapsed-time tracking, computing the average FPS over a 10 second period. Since CUDA-GL interop calls forces synchronization between the CUDA kernel and OpenGL rendering, the CPU-side frame loop aligns with actual GPU computation. Disabling visualization removes rendering overhead so that the measured FPS more accurately reflects GPU performance. 
 
 ## For each implementation, how does changing the number of boids affect performance? Why do you think this is?
+<table>
+  <tr>
+    <td><img src="images/Average FPS over 10s vs. Boid Count (128 Block Size, Visualization On).png" width="500"/></td>
+    <td><img src="images/Average FPS over 10s vs. Boid Count (128 Block Size, Visualization Off).png" width="500"/></td>
+  </tr>
+  <tr>
+    <td align="center">Naive</td>
+    <td align="center">Coherent</td>
+  </tr>
+</table>
 
 ## For each implementation, how does changing the block count and block size affect performance? Why do you think this is?
+<table>
+  <tr>
+    <td><img src="images/Average FPS over 10s vs. Block Size (Boid Count 100k, Visualization On).png" width="500"/></td>
+    <td><img src="images/Average FPS over 10s vs. Block Size (Boid Count 100k, Visualization Off).png" width="500"/></td>
+  </tr>
+  <tr>
+    <td align="center">Naive</td>
+    <td align="center">Coherent</td>
+  </tr>
+</table>
 
 ## For the coherent uniform grid: did you experience any performance improvements with the more coherent uniform grid? Was this the outcome you expected? Why or why not?
 
